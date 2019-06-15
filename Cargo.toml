@@ -1,0 +1,21 @@
+[package]
+name = "jsonl_tools"
+description = "Tools for filtering and manipulating JSONL."
+version = "0.1.0"
+authors = ["Matthew Seyer <matthew.seyer@gmail.com>"]
+edition = "2018"
+homepage = "https://github.com/forensicmatt/JsonlTools"
+repository = "https://github.com/forensicmatt/JsonlTools"
+license = "Apache-2.0"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+log = "0.4"
+clap = "2"
+serde_json = "1.0"
+jmespath = "^0.2.0"
+
+[[bin]]
+name = "filter_jsonl"
