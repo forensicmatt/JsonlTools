@@ -3,14 +3,16 @@ extern crate log;
 extern crate clap;
 extern crate jmespath;
 use std::io;
+use std::rc::Rc;
 use std::fs::File;
 use std::path::Path;
 use std::process::exit;
 use jmespath::Expression;
+use jmespath::Variable;
 use clap::{App, Arg, ArgMatches};
 use std::io::{BufRead, BufReader};
 
-static VERSION: &'static str = "0.1.0";
+static VERSION: &'static str = "0.1.1";
 
 
 fn make_app<'a, 'b>() -> App<'a, 'b> {
@@ -21,16 +23,18 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
         .help("The source of the jsonl file.")
         .takes_value(true);
 
-    let pipe_arg = Arg::with_name("pipe")
-        .short("p")
-        .long("pipe")
-        .help("Read from STDIN pipe.");
-
     let filter_arg = Arg::with_name("filter")
         .short("f")
         .long("filter")
         .value_name("JMES_FILTER")
         .help("The JMESPath filter to use.")
+        .takes_value(true);
+
+    let delimiter_arg = Arg::with_name("delimiter")
+        .short("d")
+        .long("delimiter")
+        .value_name("DELIMITER")
+        .help("The delimiter to use if result is an array.")
         .takes_value(true);
 
     let bool_arg = Arg::with_name("bool_expr")
@@ -51,7 +55,7 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
         .author("Matthew Seyer <https://github.com/forensicmatt/JsonlTools>")
         .about("Tool to filter JSONL with JMESPath queries.")
         .arg(source_arg)
-        .arg(pipe_arg)
+        .arg(delimiter_arg)
         .arg(filter_arg)
         .arg(bool_arg)
         .arg(verbose)
@@ -78,6 +82,33 @@ fn get_expression<'a>(options: &ArgMatches) -> Option<Expression<'a>> {
         },
         false => None
     }
+}
+
+
+fn array_to_text(result: Rc<jmespath::Variable>, delimiter: &str) -> String {
+    match &*result {
+        Variable::Array(array) => {
+            let mut string_list: Vec<String> = Vec::with_capacity(
+                array.len()
+            );
+
+            for item in array {
+                let text = match item.as_string() {
+                    Some(s) => s.to_owned(),
+                    None => format!("{}", item)
+                };
+
+                string_list.push(
+                    text
+                );
+            }
+
+            return string_list.join(delimiter);
+        },
+        _ => {
+            return "".to_string()
+        }
+    };
 }
 
 
@@ -108,7 +139,15 @@ fn process_line(jmes_expr: &Option<Expression>, line_str: &str, options: &ArgMat
                     }
                 },
                 false => {
-                    println!("{}", result);
+                    if result.is_array() {
+                        let output = array_to_text(
+                            result, 
+                            options.value_of("delimiter").unwrap_or("\t")
+                        );
+                        println!("{}", &output);
+                    } else {
+                        println!("{}", result);
+                    }
                 }
             }
         },
@@ -186,15 +225,7 @@ fn main() {
             }
         },
         false => {
-            match options.is_present("pipe") {
-                true => {
-                    process_stdin(&options);
-                },
-                false => {
-                    eprintln!("filter_jsonl requires a source or pipe option.");
-                    exit(-1);
-                }
-            }
+            process_stdin(&options);
         }
     }
 }
