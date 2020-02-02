@@ -18,7 +18,7 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
         .short("s")
         .long("source")
         .value_name("PATH")
-        .help("The source of the jsonl file.")
+        .help("The source of the jsonl file. (Omit this to use STDIN as the source)")
         .takes_value(true);
 
     let filter_arg = Arg::with_name("filter")

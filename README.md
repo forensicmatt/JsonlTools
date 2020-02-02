@@ -21,6 +21,6 @@ OPTIONS:
         --debug <DEBUG>              Debug level to use. [possible values: Off, Error, Warn, Info, Debug, Trace]
     -d, --delimiter <DELIMITER>      The delimiter to use if result is an array.
     -f, --filter <JMES_FILTER>...    The JMESPath filter to use.
-    -s, --source <PATH>              The source of the jsonl file.
+    -s, --source <PATH>              The source of the jsonl file. (Omit this to use STDIN as the source)
     -t, --text <TEXT_PATTERN>        The text pattern to use. (Must be a JMESPath query that results in an array)
 ```
