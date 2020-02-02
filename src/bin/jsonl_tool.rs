@@ -50,10 +50,10 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
         .possible_values(&["Off", "Error", "Warn", "Info", "Debug", "Trace"])
         .help("Debug level to use.");
 
-    App::new("filter_jsonl")
+    App::new("jsonl_tool")
         .version(VERSION)
         .author("Matthew Seyer <https://github.com/forensicmatt/JsonlTools>")
-        .about("Tool to filter JSONL with JMESPath queries.")
+        .about("Tool to filter and format JSONL with JMESPath queries.")
         .arg(source_arg)
         .arg(delimiter_arg)
         .arg(filter_arg)
