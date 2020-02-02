@@ -1,3 +1,5 @@
+[![Build Status](https://dev.azure.com/matthewseyer/dfir/_apis/build/status/forensicmatt.JsonlTools?branchName=master)](https://dev.azure.com/matthewseyer/dfir/_build/latest?definitionId=5&branchName=master)
+
 # JsonlTools
 Tools for filtering and manipulating JSONL
 
