@@ -10,7 +10,7 @@ use jsonl::errors::CustomError;
 use jsonl::jsonl::JsonlHandler;
 use jsonl::text::TextHandler;
 
-static VERSION: &'static str = "0.1.0";
+static VERSION: &'static str = "0.1.1";
 
 
 fn make_app<'a, 'b>() -> App<'a, 'b> {
@@ -40,7 +40,7 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
         .short("d")
         .long("delimiter")
         .value_name("DELIMITER")
-        .help("The delimiter to use if result is an array.")
+        .help("The delimiter to use when using the --text param.")
         .takes_value(true);
 
     let verbose = Arg::with_name("debug")
@@ -137,7 +137,6 @@ fn main() {
 
     let opt_text_handler = match options.value_of("text") {
         Some(p) => {
-            println!("p: {}", p);
             Some(
                 TextHandler::new(
                     delimiter.to_string(),
@@ -157,12 +156,16 @@ fn main() {
             }
         };
 
-        let line_value = serde_json::from_str(&line).expect("Error parsing json line");
+        let line_value = serde_json::from_str(
+            &line
+        ).expect("Error parsing json line");
 
         if handler.pass(&line_value) {
             let display = match opt_text_handler {
                 Some(ref text_handler) => {
-                    text_handler.format_value(&line_value).expect("Error formatting text")
+                    text_handler.format_value(
+                        &line_value
+                    ).expect("Error formatting text")
                 },
                 None => {
                     line
